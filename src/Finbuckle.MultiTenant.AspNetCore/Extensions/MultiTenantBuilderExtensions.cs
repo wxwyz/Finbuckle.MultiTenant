@@ -25,6 +25,24 @@ namespace Finbuckle.MultiTenant;
 /// </summary>
 public static class MultiTenantBuilderExtensions
 {
+    public static MultiTenantBuilder<TTenantInfo> ShortCircuitWhen<TTenantInfo>(
+        this MultiTenantBuilder<TTenantInfo> builder, Action<ShortCircuitWhenOptions> options)
+        where TTenantInfo : class, ITenantInfo, new()
+    {
+        builder.Services.Configure(options);
+
+        return builder;
+    }
+
+    public static MultiTenantBuilder<TTenantInfo> ShortCircuitWhenTenantNotResolved<TTenantInfo>(
+        this MultiTenantBuilder<TTenantInfo> builder)
+        where TTenantInfo : class, ITenantInfo, new()
+    {
+        builder.Services.Configure<ShortCircuitWhenOptions>(config => config.Predicate = context => !context.IsResolved);
+
+        return builder;
+    }
+
     /// <summary>
     /// Configures authentication options to enable per-tenant behavior.
     /// </summary>
